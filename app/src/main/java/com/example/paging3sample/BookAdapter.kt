@@ -9,24 +9,26 @@ import com.example.paging3sample.databinding.ActivityMainBinding
 import com.example.paging3sample.databinding.ItemBookBinding
 import com.example.paging3sample.room.Book
 
-class BookViewHolder(private val binding: ItemBookBinding) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(book: Book) {
-        binding.bookName.text = book.bookName
-        binding.bookPublish.text = book.bookPublisher
-    }
-}
 
-class BookAdapter : PagingDataAdapter<Book, BookViewHolder>(diffCallback) {
+class BookAdapter : PagingDataAdapter<Book, BookAdapter.BookViewHolder>(diffCallback) {
+
+    inner class BookViewHolder(private val binding: ItemBookBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(book: Book) {
+            binding.bookName.text = book.bookName
+            binding.bookPublish.text = book.bookPublisher
+        }
+    }
 
     override fun onBindViewHolder(holder: BookViewHolder, position: Int) {
         holder.bind(getItem(position)!!)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookViewHolder {
+        val layoutInflater = LayoutInflater.from(parent.context)
+
         return BookViewHolder(
-            ItemBookBinding.inflate(
-                LayoutInflater.from(parent.context), parent, false
-            )
+            ItemBookBinding.inflate(layoutInflater, parent, false)
         )
     }
 

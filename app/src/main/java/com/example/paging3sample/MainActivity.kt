@@ -2,14 +2,21 @@ package com.example.paging3sample
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
+import androidx.paging.LoadStateAdapter
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.paging3sample.databinding.ActivityMainBinding
 import com.example.paging3sample.room.BookDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -18,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: BookViewModel by lazy {
         ViewModelProvider(
             owner = this,
-            factory = BookViewModelFactory(BookDatabase.getDatabase(applicationContext).bookDao())
+            factory = BookViewModelFactory(applicationContext)
         )[BookViewModel::class.java]
     }
 
@@ -29,16 +36,9 @@ class MainActivity : AppCompatActivity() {
 
         adapter = BookAdapter()
         binding.recyclerView.adapter = adapter
-        binding.recyclerView.layoutManager = LinearLayoutManager(this)
 
         lifecycleScope.launch {
-            viewModel.data.collectLatest { adapter.submitData(it) }
-        }
-
-        binding.add.setOnClickListener {
-            lifecycleScope.launch(Dispatchers.IO) {
-                viewModel.insertData()
-            }
+            viewModel.bookData.collectLatest { adapter.submitData(it) }
         }
     }
 }

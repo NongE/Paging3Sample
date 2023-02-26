@@ -1,5 +1,6 @@
 package com.example.paging3sample
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -11,24 +12,14 @@ import com.example.paging3sample.room.Book
 import com.example.paging3sample.room.BookDao
 import kotlinx.coroutines.flow.Flow
 
-class BookViewModel(private val bookDao: BookDao) : ViewModel() {
-
-    val data: Flow<PagingData<Book>> = Pager(
-        config = PagingConfig(10)
-    ) { BookPagingSource(bookDao) }
-        .flow
-        .cachedIn(viewModelScope)
-
-    fun insertData() {
-        for (i in 0..10000) {
-            bookDao.insertBook(Book(bookName = "BookName $i", bookPublisher = "BookPublisher $i}"))
-        }
-    }
+class BookViewModel(private val context: Context) : ViewModel() {
+    private val repository = BookRepository(context)
+    val bookData = repository.getBookData().cachedIn(viewModelScope)
 }
 
-class BookViewModelFactory(private val bookDao: BookDao) : ViewModelProvider.Factory {
+class BookViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return BookViewModel(bookDao = bookDao) as T
+        return BookViewModel(context = context) as T
     }
 }

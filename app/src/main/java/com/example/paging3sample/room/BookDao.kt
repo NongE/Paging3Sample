@@ -11,9 +11,6 @@ interface BookDao {
     @Query("SELECT * FROM book_database ORDER BY id DESC LIMIT :loadSize OFFSET :index * :loadSize")
     suspend fun getAllBook(index: Int, loadSize: Int): List<Book>
 
-    @Query("SELECT * FROM book_database ORDER BY id DESC")
-    fun getAllBookWithoutPaging(): List<Book>
-
     @Insert
     fun insertBook(data: Book)
 }
